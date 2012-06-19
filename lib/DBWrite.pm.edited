@@ -1,0 +1,389 @@
+package DBWrite ;
+
+=head1 DBWrite
+
+  Methods for connecting to and updating the database.
+
+=cut
+
+use strict ;
+use DBI ;
+use Log::Log4perl ;
+
+my $log = Log::Log4perl->get_logger("DBWrite") ;
+
+=head1 Methods
+
+=cut
+
+# sub new{
+#   my $invocant = shift ;
+#   my $class = ref($invocant) || $invocant ;
+#   my $self = {  } ;
+
+#   bless($self, $class) ;
+#   $self->{dbname} = "" ;
+#   $self->{pwd} = "" ;
+#   $self->{username} = "" ;
+#   return $self ;
+# }
+
+=head2 new
+
+ Constructor
+
+ Accepts: Scalars with database name and optional user and password.
+ Returns:
+
+=cut
+
+sub new {
+  my $log = Log::Log4perl->get_logger("new") ;
+  my $msg = "" ;
+
+  $msg = "In constructor." ;
+  $log->debug($msg) ;
+
+  my $invocant = shift ;
+  my $class = ref($invocant) || $invocant ;
+  my $self = {  } ;
+
+  my @args = @_ ;
+
+  unless (scalar @args > 1) {
+    $msg = "DB constructor called with insfufficient arguments." ;
+    $log->fatal($msg) ;
+    die $msg, "\n" ;
+  }
+
+  $self->{dbname} = shift @args ;
+  $self->{user}   = shift @args || "" ;
+  $self->{pwd}    = shift @args || "" ;
+
+  # The old Sybase server
+  # my $dbh = DBI->connect(":Sybase:server=$self->{dbname}",
+  #                        $self->{user},
+  #                        $self->{pwd},
+  #                        {PrintError=>1}) ;
+
+  unless (-e $self->{dbname}) {
+    create_db($self->{dbname}, $self->{user}, $self->{pwd}) ;
+  }
+
+  my $dbh = DBI->connect("dbi:SQLite:dbname=$self->{dbname}", $self->{user}, $self->{pwd}) ;
+  unless ($dbh) {
+    $msg = "Unable to create SQLite database: " . $DBI::errstr ;
+    log->fatal($msg) ;
+    die $msg, "\n";
+  }
+  $self->{dbh} = $dbh ;
+
+  bless($self, $class) ;
+
+} # end new
+
+=head2 _printme
+
+ Print the object (for testing).
+
+=cut
+
+sub _printme {
+  use Data::Dumper ;
+  my $self = shift ;
+
+  print Dumper $self, "\n\n" ;
+}
+
+=head2 create_db
+
+  Create a suitable database for snpdoc.
+
+  Accepts: Scalar with the database name.
+  Returns: Status
+
+=cut
+
+sub create_db{
+  my $log = Log::Log4perl->get_logger("create_db") ;
+  my $msg = "" ;
+
+  $msg = "IN create_db" ;
+  $log->debug($msg) ;
+
+  my ($dbname, $user, $pwd) = @_ ;
+  my $dbh = DBI->connect("dbi:SQLite:dbname=$dbname", $user, $pwd) ;
+
+  my $sql = <<END;
+create table variation (
+  type varchar(255),
+  name varchar(255),
+  chr  varchar(2),
+  pos1 int,
+  pos2 int,
+  ncbi_url
+  ucsc_url
+  snp_chr
+  chr_url
+  near_gene1
+  gene_url1
+  near_gene2
+  gene_url2
+  gene
+  description
+  gene_url
+  alias
+  cons_multiz
+  cons_phast
+  risk
+  cpg
+  cnv
+  maxclass
+  version
+  merged_to
+) ;
+END
+
+  my $sth = $dbh->prepare($sql) ;
+  unless ($sth) {
+    $msg = "Could not prepare sql (create table ...)" ;
+    $msg .= $dbh->errstr() ;
+    $log->fatal($msg) ;
+    die $msg, "\n" ;
+  }
+
+  my $rv = $sth->execute() ;
+  unless ($rv) {
+    $msg = "Could not execute sql (create table ...) " ;
+    $msg .= $dbh->errstr() ;
+    $log->fatal($msg) ;
+    die $msg, "\n" ;
+  }
+
+  $dbh->disconnect() ;
+
+  $log->info("Created table \"variation\" in database $dbname.") ;
+
+  return 1 ;
+} # end create_db
+
+sub trim {
+  my $line = shift ;
+
+  $line =~ s/[\r\n]+//g ;
+  $line =~ s/^\s+// ;
+  $line =~ s/\s+$// ;
+
+  return $line ;
+} # end trim
+
+
+=head2 load
+
+Load database information from supplied file.
+
+=cut
+
+sub load {
+  my $log = Log::Log4perl->get_logger("load") ;
+  my $self = shift ;
+  my $config_file = shift ;
+
+  unless ($config_file) {
+    $log->fatal("Load called without a configuration file.") ;
+    die("[DBWrite::load] error 3: Must pass a config file to DBWrite.") ;
+  }
+
+  # Read the param file passed in.
+  unless (open(CONF, $config_file) ) {
+    $log->fatal("Could not open $config_file.") ;
+    die("[DBWrite::load] Config file failed to open\n") ;
+  }
+
+  my %param = () ;
+ LINE:
+  while (my $line = <CONF>) {
+    chomp $line ;
+    $line =~ s/\#.*$// ;
+    next LINE if $line =~ m/^\s*$/ ;
+
+    my ($key, $val) = split(/=/, $line) ;
+    $key = trim($key) ;
+    $val = trim($val) ;
+    $param{$key} = $val ;
+  }
+
+  $self->{dbname}   = $param{dbname} ;
+  $self->{username} = $param{user} ;
+  $self->{pwd}      = $param{pwd} ;
+
+  $self->{dbname} = "  " ;
+
+  $self->prep_db ;
+
+}  # end load
+
+=head2 prep_db
+
+  Prepare a database connection.
+
+=cut
+
+sub prep_db{
+  my $log = Log::Log4perl->get_logger("prep_db") ;
+  my $msg ;
+  my $self = shift ;
+
+  unless ($self->{dbname} and $self->{user} and $self->{pwd} ) {
+    $msg = "Called with invalid db info." ;
+    $log->fatal($msg) ;
+    die $msg, "\n" ;
+  }
+
+  my $dbh = DBI->connect("DBI:Sybase:server=$self->{dbname}",
+                         $self->{user},
+                         $self->{pwd},
+                         {PrintError=>1}) ;
+
+  die("[DBWRITE::prep_db] error 2: Unable to connect to server:  $DBI::errstr")
+    unless($dbh) ;
+
+  $self->{handle} = $dbh ;
+
+}  # DBWrite->prep_db()
+
+=head2 put
+
+Write data to the database.
+
+=cut
+
+sub put{
+  my $log = Log::Log4perl->get_logger("put") ;
+  my $msg = "" ;
+
+  $msg = "In put." ;
+  $log->debug($msg) ;
+
+  my $self = shift ;
+  my $data = shift ;
+
+  unless ($data) {
+    $msg = "Configuration file not passed to put." ;
+    $log->fatal($msg) ;
+    die("[DBWrite::put] error 3: $msg\n") ;
+  }
+
+<<<<<<< .mine
+  # Handle created by the constructor
+  my $dbh = $self->{dbh} ;
+=======
+  # Handle created in the previous method
+  my $dbh = $self->{dbh} ;
+>>>>>>> .r414
+  $self->prep_db
+    unless($dbh) ;
+
+  # Get all elts.
+  my $marker = $data->marker_text ; # may contain '(new) merged into (old)'.
+  $log->info("Processing marker: $marker.");
+
+  my $merged_to = "" ;
+  if ($marker =~ m/(rs\d+)\s+merged\sinto\s+(rs\d+)/) {
+    $merged_to = $2 ;
+    $marker = $1 ;
+  }
+
+  my $url         = $data->URL ;
+  my $ucscurl     = $data->UCSC_URL ;
+  my $snp_chr     = $data->chromosome ;
+  my $chrlink     = $data->Chr_URL ;
+  my $snp_pos     = $data->position ;
+  my $near_gene1  = $data->near_gene_text_u ;
+  my $gene_link1  = $data->near_gene_link_u ;
+  my $near_gene2  = $data->near_gene_text_d ;
+  my $gene_link2  = $data->near_gene_link_d ;
+  my $gene        = $data->gene ;
+  $gene =~ s/'// ;
+  my $description = $data->description ;
+  my $geneURL     = $data->gene_URL ;
+  my $alias       = $data->alias ;
+  my $multiz      = $data->cons_multiz ;
+  my $phast       = $data->cons_phast ;
+  my $maxrisk     = $data->risk ;
+  my $maxclass    = $data->classification ;
+  my $version     = "hg" . $data->version ;
+  my $cpg         = $data->CpG ;
+  my $cnv         = $data->CNV ;
+
+  ### Add a second level of checking if we have notfound UCSC.
+  # if ($near_gene1 =~ m/Error/) {
+  #   if ($self->check_more_accurate($marker, $version)) {
+  #     print "Not writing to db.\n" ;
+  #     return ;
+  #   }
+  #
+  # }
+
+  print "Version: $version\n" ;
+
+#  my $sql = qq{exec spInsertSNPDoc '$marker','$url','$ucscurl','$snp_chr','$chrlink ','$snp_pos','$near_gene1','$gene_link1','$near_gene2','$gene_link2','$gene','$description','$geneURL','$alias','$maxrisk','$cpg','$cnv','$maxclass','$version','$merged_to'} ;
+  my $sql = qq{exec variation '$marker','$url','$ucscurl','$snp_chr','$chrlink ',
+               '$snp_pos','$near_gene1','$gene_link1','$near_gene2','$gene_link2',
+               '$gene','$description','$geneURL','$alias', '$multiz', '$phast',
+               '$maxrisk','$cpg','$cnv','$maxclass','$version','$merged_to'} ;
+  my $sth = $dbh->prepare($sql) ;
+  unless (defined $sth) {
+    $log->fatal("Could not prepare query.") ;
+    die "[DBWrite::put] error 2: cannot prepare queries; aborting"
+  }
+
+  ### this is the craziest thing I have ever seen.  I'm keeping it
+  ### (didn't write it) because it has the appearance of genius.  or
+  ### mania. ###
+
+  my $success = 1 ;
+  $success &&= $sth->execute()
+    or die "[DBWrite::put] error 2: $DBI::errstr, $dbh->errstr" ;
+
+  if ($@) {                     # EVAL_ERROR (?)
+    $log->warn("Database error: $DBI::errstr.") ;
+    warn "[DBWrite::put] Database error: $DBI::errstr\n cannot finish transaction " . $dbh->errstr . "\n"  ;
+    $dbh->rollback ;
+  }
+  $sth->finish() ;
+
+} # end DBWrite->put()
+
+=head2 check_more_accurate
+
+  Check that an eroneous row does not overwrite a good row.  Return 1
+  if we should write the current row and 0 if not.
+
+=cut
+
+sub check_more_accurate{
+  my $log = Log::Log4perl->get_logger("check_more_accurate") ;
+
+  my $self   = shift ;
+  my $marker = shift ;
+  my $build  = shift ;
+  my $dbh    = $self->{dbh} ;
+
+#  my $sth = $dbh->prepare("select geneurltext1 from _sysSnpDoc where marker = '$marker' and build = '$build' ") ;
+  my $sth = $dbh->prepare("select geneurltext1 from variation where marker = '$marker' and build = '$build' ") ;
+
+  unless ($sth->execute()) {
+    $log->fatal("Could not connect to database: $DBI::errstr.") ;
+    die "[DBWrite::check_more_accurate] error 2: non-responsive database:\n $DBI::errstr" ;
+  }
+
+  while (my @data = $sth->fetchrow_array()) {
+    return 1 if($data[0] !~ m/Error/) ;
+  }
+
+  return 0 ;
+
+} # DBWrite->check_more_accurate
+
+return 1 ;

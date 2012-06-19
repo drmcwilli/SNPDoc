@@ -1,0 +1,41 @@
+# Configuration file for snpdoc
+#
+# Information is in INI-style 'key = value' format.  Comments start with '#' and
+# extend to the end of the line.  Space is not important.
+#
+# David R. McWilliams <dmcwilli@wfubmc.edu>
+# This version 12-Oct-2011.
+
+# Search type.  One of "snp", "regional" or "position".  The latter
+# two may be shortened to "reg" or "pos".
+search = snp
+
+# Database name
+# If none is supplied, snpdoc.sq3 will be used.
+dbname = snpdoc.sq3
+user =
+pwd =
+
+# dbname = 10.32.5.16
+# user = wakegenperl
+# pwd = wg34p9sz
+
+# Input and output file names.  If outfile is not given, a name will be
+# constructed from the input file name.
+infile = 
+outfile = 
+
+# Record separator. Currently comma (given as ",") and tab (given as "\t")
+# are recognized.
+sep = ","
+
+# Genome UCSC build version.  Currently hg18 and hg19 are recognized
+ucsc_version = 19
+
+# Output format.  One of "text", "html" or spreadsheet.  If text, the
+# same delimiter as the input file will be used.
+
+outformat = text
+
+# Setting to one will print more info to the screen while running
+verbose = 0

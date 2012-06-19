@@ -1,0 +1,14 @@
+positions	comment
+chr2:12345678	fictitious position
+chr11:116700140	fictitious position
+chr30:123456890	bad chromosome
+chr01:1234567	unusual but correct chromosome
+chr1:69569	rs2531267 at chr1:69569 (hg18) in OR4F5 "olfactory receptor, family 4, subfamily F, member5"
+chr16:226982	rs41518249 16:226982 in HBA1, clinically associated variant (NCBI, presumably hg19)
+chr16:227110	rs33991779 16:227110 in HBA1, clinically associated variant (NCBI, presumably hg19)
+chr8:9178821	
+chr19:19254512	
+chr1:219379693	
+chr1:219406409	
+chr1:11078893	missense; rs80356717; in TARDBP, assoc. with ALS
+chr1:11082475	missense; rs80356730; in TARDBP, assoc. with ALS

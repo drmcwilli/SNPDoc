@@ -1,0 +1,59 @@
+snp	description
+rs2531267	rs2531267 at chr1:69569 (hg19) in OR4F5 "olfactory receptor; family 4; subfamily F; member5"
+rs41518249	rs41518249 16:226982 in HBA1; clinically associated variant (NCBI; presumably hg19)
+rs33991779	rs33991779 16:227110 in HBA1; clinically associated variant (NCBI; presumably hg19)
+rs59972259	merged into rs7576247
+rs16861247	merged into rs7628649 
+rs36196663	merged into rs7628649
+rs55830329	merged into rs41480447; NCBI returns 'sequence not available'
+rs4163425	randomly generated; found in M. musculus
+rs5426392	randomly generated; found in Anopheles gambiae
+rs4897373	randomly generated; found in H. sapiens
+rs14017975	randomly generated; found in Gallus gallus
+rs23660080	randomly generated; found in Canis familiaris
+rs100000000	NCBI returns '400 Bad Request'
+rs123456a	bad name
+SNP_12345	bad name
+ss9876543	bad name
+rs2516647	mcm ld list; UCSC hg19 intron, near-gene-5; 
+rs1075496	mcm ld list; UCSC hg18 intron; hg19 intron
+rs3888778	mcm ld list; UCSC hg19 missense
+rs6904236	mcm ld list; UCSC hg19 coding-synon
+rs80356717	missense; pmid=18372902; associated w/ ALS; via Karchin09
+rs80356730	missense; pmid=18309045; associated w/ ALS
+rs4320761	intronic; associated w/ schizo; via Karchin09
+rs910694	intronic; associated w/ schizo; via Karchin09
+rs1354064	intronic; associated w/ schizo; via Karchin09
+rs1321177	intronic; associated w/ schizo; via Karchin09
+rs2144719	intronic; associated w/ schizo; via Karchin09
+rs1040716	intronic; associated w/ schizo; via Karchin09
+rs783038	intronic; associated w/ schizo; via Karchin09
+rs12268840	intronic; associated w/ cancer; via Karchin09
+rs2308321	non-synonymous; associated w/ cancer; via Karchin09
+rs37297271	synonymous; NCBI returns 'not found', UCSC returns info for rs28730832; from Lorna Moore
+rs12735892	stop gained; DVL1, dishevelled; conservation=0.835577; hg18
+rs61752096	stop gained; PEX10, peroxisome biogenesis factor 10 isoform 1; conservation=0.777046; hg18
+rs2949417	ucsc near-gene-5; conservation = 0.914634; hg18
+rs7515915	LOC643837; Homo sapiens cDNA: FLJ23220 fis, clone ADSU01957; ucsc near-gene-5; conservation = 0.898877; hg18
+rs61567368	ucsc 'unknown'; hg18
+rs210498	TPTE, transmembrane phosphatase with tensin homology; conservation=0.77381; ucsc coding-synon; hg18
+rs563155	USP14, ubiquitin specific protease 14 isoform; ucsc coding-synon; conservation=0.643072
+rs12516245	PLEKHG4B, pleckstrin homology domain containing, family G; ucsc coding-synon; conservation=0.50944; hg18
+rs7403777	ucsc near-gene-3; conservation=0.892016; hg18
+rs11540551	ADCYAP1, adenylate cyclase activating polypeptide; ucsc nonsense, conservation=0.808201; hg18
+rs61729638	ADAP1, centaurin, alpha 1; ucsc nonsense, conservation=0.714957; ensembl did not call; hg18
+rs4241318	FAM110C, hypothetical protein LOC642273; ucsc missense; conservation=0.361074; hg18
+rs9783569	conservation=0.44599; ucsc calls missense; no ensembl call; hg18
+rs4494468	OR4Q3, olfactory receptor, family 4, subfamily Q; conservation=0.544413; ucsc missense; hg18
+rs2272522	CHL1, cell adhesion molecule with homology to L1CAMj; ucsc missense; conservation=0.604962; old snpdoc did not call correctly; hg18
+rs41276376	DEFB125, defensin, beta 125 preproprotein; ucsc missense; conservation=0.482762; hg18
+rs3742162	conservation=0.496609; ucsc calls untranslated-3; no ensembl call; hg18
+rs2847089	ROCK1P1; ucsc and ensembl untranslated-3; conservation=0.625949; hg18
+rs3758506	ZMYND11, zinc finger, MYND domain containing 11 isoform; conservation=0.680325; ucsc and ensembl utr-3; hg18
+rs11710005	CNTN6, contactin 6; ucsc utr-5, ensembl utr5, splice_site, intron; conservation=0.695762; hg18
+rs13360	LARP4B; ucsc and ensemble utr-5, but snpdoc returns unknown; conservation=0.760418; hg18
+rs2492218	FOXD4,forkhead box D4; uscs utr-5; ensembl up- and downstream, utr-5; conservation=0.590939; hg18
+rs28510869	DUSP22, dual specificity phosphatase 22; ucsc and ensembl utr-5; conservation=0.461765; hg18
+rs61752136	PEX26, peroxisome biogenesis factor 26; conservation=0.714075; ucsc nonsense; ensembl stop_gained, 3prime-utr, upstream; hg19
+rs61766182	B3GALT6, beta-1,3-galactosyltransferase 6; conservation=0.819288; ucsc near-gene-5, nonsense; ensembl upstream, stop_gained; hg19
+rs71317167	TRMT2A, HpaII tiny fragments locus 9C; conservation=0.625125; ucsc  near-gene-5, missense; ensembl upstream, non_synonymous_coding, downstream, 3prime_utr; hg19

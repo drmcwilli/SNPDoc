@@ -1,0 +1,31 @@
+# Parameters file for snpdoc.pl
+#
+# SNPDoc uses the Log::Log4perl package for centralized logging
+# of operations and errors.  See CPAN (search.cpan.org) for
+# documentation if you want to make significant changes to this
+# configuration.
+#
+# Comments are preceded by '#' and extend to the end of the line.
+# Space is not significant.
+#
+# David R. McWilliams <dmcwilli@wfubmc.edu>
+# This version 03-Oct-2011
+
+# Root Logger
+# Log4perl has 6 log levels: FATAL > ERROR > WARN > INFO > DEBUG > TRACE
+# Only messages at the set level and above are logged.  If you
+# want to only see errors (to minimize the size of the log, for
+# instance), change 'INFO' to 'ERROR' or to see a great deal of debugging
+# output to 'DEBUG'.
+
+log4perl.rootLogger = WARN, LOGFILE
+
+log4perl.appender.LOGFILE = Log::Log4perl::Appender::File
+log4perl.appender.LOGFILE.filename = snpdoc.log
+
+# Output will be appended to the file.  If you want a new file
+# with every instance of snpdoc, comment this line.
+log4perl.appender.LOGFILE.mode = append
+
+log4perl.appender.LOGFILE.layout = PatternLayout
+log4perl.appender.LOGFILE.layout.ConversionPattern = [%d] %F::%c(%L): [%p] %m%n
