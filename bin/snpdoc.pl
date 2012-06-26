@@ -22,13 +22,6 @@ my $log_params  = RealBin() . '/../data/log.params' ;
 
 my $cpg_file ;  # assigned below
 
-## setup used for Ensembl API.
-# use lib RealBin() . '/../lib/src/ensembl-variation/modules' ;
-# use lib RealBin() . '/../lib/src/ensembl/modules' ;
-# use lib RealBin() . '/../lib/src/bioperl-live' ;
-
-# use Bio::EnsEMBL::Variation::DBSQL::DBAdaptor ;
-# use Bio::EnsEMBL::DBSQL::DBAdaptor ;
 use SNPData;       # Used to hold all information about the snp.
 use ChrRegion;     # Used to perform region checks
 use RiskMarker;    # Used to calculate risk with fastsnp algorithm
@@ -36,7 +29,6 @@ use CPGIslands;    # Used to find CPGIslands
 use CNV;           # Used for variations
 use UCSC;          # Used for near to gene calculation.
 use NCBIAccess;	   # Used to access NCBI.
-# use EnsemblAccess; # Used to access Ensembl.
 use DBWrite ;      # Used for database write
 
 my $starttime = localtime time ;
@@ -89,8 +81,6 @@ $ucsc_test->db_version($options->{ucsc_version}) ;
 
 my $ncbi_access = NCBIAccess->new ;
 $ncbi_access->verbose_level($options->{verbose}) ;
-
-# my $ensembl_access = EnsemblAccess->new ;
 
 ### Start of testing.
 
@@ -799,7 +789,6 @@ sub trim_line {
     if ($options->{verbose}) {
       print "Gene information: " . $data->description . " -- " . $data->alias . "\n"  ;
     }
-    # $ensembl_access->get_ensembl_data($data) ; # Fills data->consequence, protein_coding
 
     return 1 ;
   } # end process_gene
@@ -1439,7 +1428,7 @@ usage:
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2006-2011 by Wake Forest University This program is free
+Copyright (C) 2006-2012 by Wake Forest University This program is free
 software; you can redistribute it and/or modify it under the same
 terms as Perl itself.  The full license can be found at
 http://dev.perl.org/licenses/
@@ -1451,11 +1440,6 @@ warranties of merchantability and fitness for a particular purpose.
 The entire risk as to the quality and performance of the program is
 with you.  Should the program prove defective, you assume the cost of
 all necessary servicing, repair, or correction.
-
-Notice of use of outside software: SNPdoc ships with a number of
-modules developed by Ensembl and available at www.ensembl.org.  SNPdoc
-ships with a number of packages by Bioperl which are available under
-GPL.
 
 =head1 Error flags
 
