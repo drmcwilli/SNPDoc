@@ -9,7 +9,6 @@ create table variation (
   pos2 int,
   ncbi_url varchar(255),
   ucsc_url varchar(255),
-  snp_chr varchar(255),
   chr_url varchar(255),
   near_gene1 varchar(255),
   gene_url1 varchar(255),
