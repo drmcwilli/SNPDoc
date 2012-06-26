@@ -23,7 +23,9 @@ die "Unable to connect: $DBI::errstr\n" unless $dbh ;
 
 # my $sth = $dbh->prepare("SELECT * FROM _sysSnpDoc WHERE build = $build") ;
 # my $sth = $dbh->prepare("SELECT * FROM _sysSnpDoc") ;
-my $sth = $dbh->prepare("SELECT count(*) FROM _sysSnpDoc") ;
+
+# v_sysSNPDocMostRecent contains the most recent info from updates
+my $sth = $dbh->prepare("SELECT * FROM v_sysSNPDocMostRecent") ;
 
 die "Cannot prepare query: $!"
   unless defined $sth ;

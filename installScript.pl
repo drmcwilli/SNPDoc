@@ -34,27 +34,31 @@ For this simple release, all testing occurs right here.
 
 =cut
 
-print "Testing:\n";
+my $need_pkgs = 0 ;
+print "Searching for required perl packages:\n";
 
 print "LWP::Simple installed? ";
 if( eval "use LWP::Simple; 1" ) {
   print "Yes!\n"
 } else {
-  print "No.  See manual for CPAN instructions.\n"
+  print "No.\n" ;
+  $need_pkgs++ ;
 }
 
 print "DBI installed? ";
 if( eval "use DBI; 1" ) {
   print "Yes!\n";
 } else {
-  print "No.  See manual for CPAN instructions.\n"
+  print "No.\n" ;
+  $need_pkgs++ ;
 }
 
 print "DBD::mysql installed? ";
 if( eval "use DBD::mysql; 1" ) {
-	print "Yes!\n";
+  print "Yes!\n";
 } else {
   print "No.\n";
+  $need_pkgs++ ;
   print "For rpm systems (redhat), log in as root and type\n";
   print "rpm -i mysql mysql-devel mysql-server\n";
   print "rpm -i perl-DBI\n";
@@ -66,11 +70,32 @@ if( eval "use DBD::mysql; 1" ) {
   print "See manual for install instructions.\n"
 }
 
+print "DBD::SQLite installed? " ;
+if( eval "use DBD::SQLite; 1" ) {
+  print "Yes!\n";
+} else {
+  print "No.\n" ;
+  $need_pkgs++ ;
+}
+
 print "FindBin::Real installed? ";
 if( eval "use FindBin::Real; 1" ) {
   print "Yes!\n";
 } else {
-  print "No.  See manual for CPAN instructions.\n"
+  print "No.\n" ;
+  need_pkgs++ ;
+}
+
+print "Log::Log4perl installed? " ;
+if (eval "use Log::Log4perl; 1") {
+  print "Yes!\n" ;
+} else {
+  print "No.\n" ;
+  $need_pkgs++ ;
+}
+
+if ($need_pkgs) {
+  print "One or more required packages are not present.  Install with CPAN or\nyour package manager.\n" ;
 }
 
 # end installScript
