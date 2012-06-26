@@ -16,10 +16,6 @@ dbname = snpdoc.sq3
 user =
 pwd =
 
-# dbname = 10.32.5.16
-# user = wakegenperl
-# pwd = wg34p9sz
-
 # Input and output file names.  If outfile is not given, a name will be
 # constructed from the input file name.
 infile = 
@@ -35,7 +31,7 @@ ucsc_version = 19
 # Output format.  One of "text", "html" or spreadsheet.  If text, the
 # same delimiter as the input file will be used.
 
-outformat = text
+outformat = html
 
 # Setting to one will print more info to the screen while running
 verbose = 0
