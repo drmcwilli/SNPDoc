@@ -347,8 +347,14 @@ sub put{
     }
   }
 
-# Following is the insert statement for the WFU Sybase Database
-# my $sql = qq{exec spInsertSNPDoc '$marker','$url','$ucscurl','$snp_chr','$chrlink ','$snp_pos','$near_gene1','$gene_link1','$near_gene2','$gene_link2','$gene','$description','$geneURL','$alias','$maxrisk','$cpg','$cnv','$maxclass','$version','$merged_to'} ;
+# The following is the insert statement for the WFU Sybase Database
+# (wrapped for clarity)
+
+# my $sql = qq{exec spInsertSNPDoc
+# '$marker', '$url', '$ucscurl', '$snp_chr', '$chrlink', '$snp_pos',
+# '$near_gene1', '$gene_link1','$near_gene2', '$gene_link2',
+# '$gene', '$description', '$geneURL', '$alias', '$maxrisk', '$cpg','$cnv',
+# '$maxclass','$version','$merged_to'} ;
 
 my $sql = <<SQL ;
 insert into variation (type,    name,     ncbi_url, ucsc_url,   chr,     chr_url,   pos1,       near_gene1,   gene_url1,    near_gene2,   gene_url2,    gene,   description,   gene_url,  alias,   cons_multiz, risk,        cpg,   cnv,   maxclass,   version,   merged_to )
