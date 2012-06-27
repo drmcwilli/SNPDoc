@@ -25,5 +25,6 @@ create table variation (
   cnv varchar(255),
   maxclass  varchar(255),
   version varchar(10),
-  merged_to varchar(255)
+  merged_to varchar(255),
+  date_inserted varchar(25)
 ) ;
