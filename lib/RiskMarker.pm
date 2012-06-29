@@ -189,7 +189,7 @@ sub calc_risk {
 }  # end calc_risk_original
 
 
-=head2 calc_risk_new
+=head2 calc_risk_ucsc
 
   Adapt the FastSNP algorithm to use the functional categories
   returned by UCSC.
@@ -238,6 +238,7 @@ sub calc_risk_ucsc {
   my $fas_ct1  = -1 ;           # Splicing silencer count (FAS-ESS)
   my $fas_ct2  = -1 ;
 
+ FUNCTION:
   foreach my $func (@{$funx}) {
     $msg = "Interating over functions: func = $func." ;
     $log->debug($msg) ;
@@ -255,7 +256,12 @@ sub calc_risk_ucsc {
 
       # Get the number of transcription factors for each allele
       if ($tf_ct1 < 0) {
-        ($tf_ct1, $tf_ct2) = get_TFSEARCH() ;
+        # ($tf_ct1, $tf_ct2) = get_TFSEARCH() ;
+        $tf_result = get_TFSEARCH() ;
+        if (!$tf_result->{status}) {
+          $msg = "[RiskMarker::calc_risk_ucsc] Could not reach TFSEARCH db; cannot calculate risk." ;
+          last FUNCTION ;
+        }
       }
 
       if ($func =~ m/intron/) {
@@ -352,16 +358,22 @@ sub calc_risk_ucsc {
        } # end middle else: functions with TFSEARCH requirements
     } # end outer else: functions with data load requirements
 
-    if ( $risk >= $maxrisk ) {
+    if ((defined $risk) &&
+        ($risk >= $maxrisk)) {
       $maxrisk  = $risk ;
       $maxclass = $classification ;
     }
 
   } # end foreach func
 
+  if (!defined $risk) {
+    $maxrisk = "NA" ;
+  }
+
   unless ($maxclass) {
     $maxclass = "NA" ;
   }
+
   if ($maxclass =~ m/Unknown:/) {
     $maxrisk = "NA" ;
   }
@@ -373,11 +385,15 @@ sub calc_risk_ucsc {
 
 =head2 get_TFSEARCH
 
-  Search www.cbrc.jp and return the number of TF found.  Refers to
-  variables $dna1 and $dna2 set previously in calc_risk.  These are
-  alleles 1 and 2 of the SNP, with 20bp upstream and 20bp downstream.
+  Search www.cbrc.jp and return status and the number of TF found (if
+  the search succeeds).  Refers to variables $dna1 and $dna2 set
+  previously in calc_risk.  These are alleles 1 and 2 of the SNP, with
+  20bp upstream and 20bp downstream.
 
 =cut
+
+# 28-Jun-2012 Return status instead of dieing if cbrc cannot be
+# reached.
 
 sub get_TFSEARCH {
   my $log = Log::Log4perl->get_logger("get_TFSEARCH") ;
@@ -392,6 +408,10 @@ sub get_TFSEARCH {
   my $sleeptime  = 5 ;
   my $passed1    = 0 ; my $passed2 = 0 ;
 
+  my $result = {status =>  0,
+                tf1    => -1,
+                tf2    => -1} ;
+
   # Get 1
   until ($passed1) {
     my $tf1 =
@@ -402,10 +422,14 @@ sub get_TFSEARCH {
 
     unless (defined $in1) {
       $retry_cnt1++ ;
-      $msg = "Could not retrieve TFSearch 1" ;
-      $log->info($msg) ;
-      die("[RiskMarker::get_TFSEARCH] TFSearch1 was unable to be revived.\n")
-        if ($retry_cnt1 == $retry_lim) ;
+
+      if ($retry_cnt1 == $retry_lim) {
+        $msg = "[RiskMarker::get_TFSEARCH] Website for TFSearch could not be reached.";
+        $log->warn($msg) ;
+
+        return $result ;
+      }
+
       my $sleep = $sleeptime * $retry_cnt1 ;
       $msg = "TFSearch1 was unavailable on try $retry_cnt1 of $retry_lim.  Hibernating for $sleep seconds." ;
       $log->info($msg) ;
@@ -426,11 +450,14 @@ sub get_TFSEARCH {
     $in2 = get($tf2) ;
     unless( defined $in2) {
       $retry_cnt2++ ;
-      $msg = "Could not retriev TFSearch 2" ;
-      $log->info($msg) ;
 
-      die("TFSearch2 was unable to be revived.")
-        if ($retry_cnt2 == $retry_lim) ;
+      if ($retry_cnt1 == $retry_lim) {
+        $msg = "[RiskMarker::get_TFSEARCH] Website for TFSearch could not be reached.";
+        $log->warn($msg) ;
+
+        return $result ;
+      }
+
       my $sleep = $sleeptime*$retry_cnt2 ;
 
       $msg = "TFSearch2 was unavailable on try $retry_cnt2 of $retry_lim.  Hibernate for $sleep seconds and try again." ;
@@ -471,7 +498,12 @@ sub get_TFSEARCH {
     print "[RiskMarker::get_TFSEARCH] TFSearch\t$ct1 =[]= $ct2\n" ;
   }
 
-  return $ct1, $ct2 ;
+  $result->{status} = 1 ;
+  $result->{tf1}    = $ct1 ;
+  $result->{tf2}    = $ct2 ;
+
+  return $result ;
+
 } # end get_TFSEARCH
 
 =head2 get_ESEF
