@@ -75,7 +75,7 @@ sub new {
 
   my $dbh = DBI->connect("dbi:SQLite:dbname=$self->{dbname}", $self->{user}, $self->{pwd}) ;
   unless ($dbh) {
-    $msg = "Unable to create SQLite database: " . $DBI::errstr ;
+    $msg = "Unable to connect to SQLite database: " . $DBI::errstr ;
     log->fatal($msg) ;
     die $msg, "\n";
   }
