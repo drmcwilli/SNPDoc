@@ -73,7 +73,15 @@ sub calc_risk {
       # Now handle the cases the will require a data load from LWP::Simple.
       # First several require only TFSEARCH.
       if ($tf_ct1 < 0) {
-        ($tf_ct1, $tf_ct2) = get_TFSEARCH() ;
+        # ($tf_ct1, $tf_ct2) = get_TFSEARCH() ;
+        $tf_result = get_TFSEARCH() ;
+        if (!$tf_result->{status}) {
+          $msg = "[RiskMarker::calc_risk_ucsc] Could not reach TFSEARCH db; cannot calculate risk." ;
+          last FUNCTION ;
+        } else {
+          $tf_ct1 = $tf_result->{tf1} ;
+          $tf_ct2 = $tf_result->{tf2} ;
+        }
       }
 
       if ($fxn =~ m/^INTRONIC$/ ) {
@@ -261,6 +269,9 @@ sub calc_risk_ucsc {
         if (!$tf_result->{status}) {
           $msg = "[RiskMarker::calc_risk_ucsc] Could not reach TFSEARCH db; cannot calculate risk." ;
           last FUNCTION ;
+        } else {
+          $tf_ct1 = $tf_result->{tf1} ;
+          $tf_ct2 = $tf_result->{tf2} ;
         }
       }
 
@@ -412,13 +423,12 @@ sub get_TFSEARCH {
                 tf1    => -1,
                 tf2    => -1} ;
 
+  my $tf_url = "http://www.cbrc.jp/htbin/nph-tfsearch?label=&seq=" ;
+
   # Get 1
   until ($passed1) {
-    my $tf1 =
-      "http://www.cbrc.jp/htbin/nph-tfsearch?label=&seq="
-        . $dna1
-          . "&taxonomy=V&threshold=" ;
-    $in1 = get($tf1) ;          # HTTP GET from LWP
+    my $tf1_query = $tf_url . $dna1 . "&taxonomy=V&threshold=" ;
+    $in1 = get($tf1_query) ;    # HTTP GET from LWP
 
     unless (defined $in1) {
       $retry_cnt1++ ;
@@ -443,11 +453,8 @@ sub get_TFSEARCH {
 
   # Get 2
   until ($passed2) {
-    my $tf2 =
-      "http://www.cbrc.jp/htbin/nph-tfsearch?label=&seq="
-        . $dna2
-          . "&taxonomy=V&threshold=" ;
-    $in2 = get($tf2) ;
+    my $tf2_query = $tf_url . $dna2 . "&taxonomy=V&threshold=" ;
+    $in2 = get($tf2_query) ;
     unless( defined $in2) {
       $retry_cnt2++ ;
 
