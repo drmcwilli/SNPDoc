@@ -55,8 +55,10 @@ print "\n" ;
 # Pretty sure we might just get rid of this?
 my $efetch_result = ncbi_link_retrieve($efetch) ;
 if ( !defined($efetch_result) ) {
-  die("[NCBIAccess::get_sequence_data] Error 1: NCBI failed to return (and failcatch did not work.)\n")  ;
+  die("No result in efetch_result.") ;
 }
+
+chomp $efetch_result ;
 
 say "efetch result:\n" ;
 print "|", $efetch_result, "|\n" ;
@@ -65,7 +67,7 @@ print "|", $efetch_result, "|\n" ;
 sub ncbi_link_retrieve {
   my $efetch = shift  ;
 
-  my $fetch_result = "NA" ;  # Return something, let the caller check
+  my $fetch_result ;
   my $wait_time = 180 ;      # This is the LWP::UserAgent default, but be explicit
 
   my $ua = LWP::UserAgent->new() ;
