@@ -423,11 +423,12 @@ sub get_TFSEARCH {
                 tf1    => -1,
                 tf2    => -1} ;
 
-  my $tf_url = "http://www.cbrc.jp/htbin/nph-tfsearch?label=&seq=" ;
+  # my $tf_url = "http://www.cbrc.jp/htbin/nph-tfsearch?label=&seq=" ;   # pre 01-Jul-2012
+  my $tf_url = "http://mbs.cbrc.jp/htbin/nph-tfsearch?taxonomy=V&seq=" ;
 
   # Get 1
   until ($passed1) {
-    my $tf1_query = $tf_url . $dna1 . "&taxonomy=V&threshold=" ;
+    my $tf1_query = $tf_url . $dna1 ; ;
     $in1 = get($tf1_query) ;    # HTTP GET from LWP
 
     unless (defined $in1) {
@@ -453,7 +454,7 @@ sub get_TFSEARCH {
 
   # Get 2
   until ($passed2) {
-    my $tf2_query = $tf_url . $dna2 . "&taxonomy=V&threshold=" ;
+    my $tf2_query = $tf_url . $dna2  ;
     $in2 = get($tf2_query) ;
     unless( defined $in2) {
       $retry_cnt2++ ;
