@@ -55,7 +55,7 @@ while (my $line = <IN>) {
   my ($snp, @rest) = split(/\s+/, $line) ;
   unless ($snp =~ m/^rs\d+$/) {
     $msg = "bad snp name" ;
-    print join("\t", $snp, "NA" x 4, $msg), "\n" ;
+    print join("\t", $snp, "NA", "NA", "NA" "NA", $msg), "\n" ;
     next LINE ;
   }
 
