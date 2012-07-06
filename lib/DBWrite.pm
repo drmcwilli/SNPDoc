@@ -461,6 +461,7 @@ sub snp_in_db {
   if (!$sth->execute($snp, $db_ver)) {
     $msg = "Problem executing query, continuing. " ;
     $msg .= $dbh->errstr ;
+    $log->warn($msg) ;
   } else {
     my $row = $sth->fetch ;
     $status++ if $row->[0] ;
