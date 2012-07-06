@@ -2,6 +2,7 @@ package RiskMarker ;
 
 use LWP::Simple ;
 use Log::Log4perl ;
+use Data::Dumper ;
 
 =head1 Risk Marker
 
@@ -76,7 +77,8 @@ sub calc_risk {
         # ($tf_ct1, $tf_ct2) = get_TFSEARCH() ;
         $tf_result = get_TFSEARCH() ;
         if (!$tf_result->{status}) {
-          $msg = "[RiskMarker::calc_risk_ucsc] Could not reach TFSEARCH db; cannot calculate risk." ;
+          $msg = "[RiskMarker::calc_risk] Could not reach TFSEARCH db; cannot calculate risk." ;
+          $log->warn($msg) ;
           last FUNCTION ;
         } else {
           $tf_ct1 = $tf_result->{tf1} ;
@@ -266,8 +268,15 @@ sub calc_risk_ucsc {
       if ($tf_ct1 < 0) {
         # ($tf_ct1, $tf_ct2) = get_TFSEARCH() ;
         $tf_result = get_TFSEARCH() ;
+
+        if ($log->is_debug()) {
+          $msg = "Result of get_TFSEARCH: " . Dumper $tf_result ;
+          $log->debug($msg) ;
+        }
+
         if (!$tf_result->{status}) {
           $msg = "[RiskMarker::calc_risk_ucsc] Could not reach TFSEARCH db; cannot calculate risk." ;
+          $log->debug($msg) ;
           last FUNCTION ;
         } else {
           $tf_ct1 = $tf_result->{tf1} ;
