@@ -10,7 +10,8 @@
 
 use LWP::Simple ;
 
-my $dna = "TATAAACAAAA" ;
+my $dna = "TATAAACAAAA" ;       # TATAA Box
+my $dna = "TTCCCGCACTTCGACCTGAGACACGGCTCTGCCCAGGTTAA" ; # from snp in HBA2; should be no score
 
 # my $tf_url = "http://www.cbrc.jp/htbin/nph-tfsearch?label=&seq=" ;   # pre 01-Jul-2012
 my $tf_url = "http://mbs.cbrc.jp/htbin/nph-tfsearch?taxonomy=V&seq=" ;

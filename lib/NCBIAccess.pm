@@ -257,6 +257,9 @@ sub get_sequence_data {
   my $retstart ;
   my $retmax ;
 
+  $msg = "Calling ncbi_link_retrieve with marker = $marker." ;
+  $log->debug($msg) ;
+
   my $esearch_result = $self->ncbi_link_retrieve( $esearch . $marker )  ;
   if ( !$esearch_result ) {
     $msg = "Could not execute NCBI esearch on $marker." ;
@@ -268,6 +271,14 @@ sub get_sequence_data {
     $WebEnv   = $3  ;
     $retstart = 0  ;
     $retmax   = 1  ;
+  }
+
+  if ($log->is_debug) {
+    $msg = "esearch result: $esearch_result." ;
+    $log->debug($msg) ;
+
+    $msg = "Parse result: Count = $Count, QueryKey = $QueryKey, WebEnv = $WebEnv." ;
+    $log->debug($msg) ;
   }
 
   my $efetch =
@@ -282,38 +293,84 @@ sub get_sequence_data {
     $log->warn($msg) ;
   }
 
-  # Scrape the line for our dna sequence.
+  if ($log->is_debug) {
+    $msg = "efetch_result: $efetch_result." ;
+    $log->debug($msg) ;
+  }
 
-  my @temp0 = split( "\n", $efetch_result )  ;
-  shift @temp0  ;
-  shift @temp0  ;
+  my @tmp = split( "\n", $efetch_result )  ;
 
-  my $a = shift @temp0  ;
+  my @data ;
+  foreach my $item (@tmp) {
+    my @flds = split(/\t/, $item) ;
+    if ((scalar @flds == 5) &&
+        ($flds[0] eq $marker)) {
+      @data = @flds ;
+    }
+  }
 
-  my @dnasplit = split( /\[|\]|\//, $a ) if defined $a ;
-  if ( scalar @dnasplit < 4 ) {
+  if ((!@data) ||
+      ($data[2] !~ /[ACTG]+/)) {
     $msg = "Brief summary failed to give sequence for marker $marker." ;
-    $log->warn($msg) ;
-
-    $data->dna1("")  ;
-    $data->allele1("")  ;
-    $data->dna2("")  ;
-    $data->allele2("")  ;
+    $log->info($msg) ;
   } else {
-    my $fiveprime  = shift @dnasplit  ;
-    my $a1         = shift @dnasplit  ;
-    my $a2         = shift @dnasplit  ;
-    my $threeprime = shift @dnasplit  ;
+
+    my $fiveprime  = $data[2]  ;
+    my $threeprime = $data[4]  ;
+
+    my $a1 ;
+    my $a2 ;
+    if ($data[3] =~ m/([ACTG])\/([ACTG])/) {
+      $a1 = $1 ;
+      $a2 = $2 ;
+    }
 
     # Clean up length to 20.
     $fiveprime  = substr( $fiveprime,  -20, 20 )  ;
     $threeprime = substr( $threeprime, 0,   20 )  ;
 
-    $data->dna1( $fiveprime . $a1 . $threeprime )  ;
-    $data->dna2( $fiveprime . $a2 . $threeprime )  ;
+    my $dna1 = $fiveprime . $a1 . $threeprime ;
+    my $dna2 = $fiveprime . $a2 . $threeprime ;
+
+    $data->dna1($dna1) ;
+    $data->dna2($dna2) ;
     $data->allele1($a1)  ;
     $data->allele2($a2)  ;
   }
+
+  #  Following commented block is the original parsing code
+  # # Scrape the line for our dna sequence.
+
+  # my @temp0 = split( "\n", $efetch_result )  ;
+  # shift @temp0  ;
+  # shift @temp0  ;
+
+  # my $a = shift @temp0  ;
+
+  # my @dnasplit = split( /\[|\]|\//, $a ) if defined $a ;
+  # if ( scalar @dnasplit < 4 ) {
+  #   $msg = "Brief summary failed to give sequence for marker $marker." ;
+  #   $log->warn($msg) ;
+
+  #   $data->dna1("")  ;
+  #   $data->allele1("")  ;
+  #   $data->dna2("")  ;
+  #   $data->allele2("")  ;
+  # } else {
+  #   my $fiveprime  = shift @dnasplit  ;
+  #   my $a1         = shift @dnasplit  ;
+  #   my $a2         = shift @dnasplit  ;
+  #   my $threeprime = shift @dnasplit  ;
+
+  #   # Clean up length to 20.
+  #   $fiveprime  = substr( $fiveprime,  -20, 20 )  ;
+  #   $threeprime = substr( $threeprime, 0,   20 )  ;
+
+  #   $data->dna1( $fiveprime . $a1 . $threeprime )  ;
+  #   $data->dna2( $fiveprime . $a2 . $threeprime )  ;
+  #   $data->allele1($a1)  ;
+  #   $data->allele2($a2)  ;w
+  # }
 
 }  # get_sequence_data
 

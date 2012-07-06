@@ -1,28 +1,25 @@
 -*- mode: org; -*-
 
-#+BEGIN_COMMENT
-SNPDoc user guide document.  Adapted from SNPDoc_User_Guide by R.T. Guy.
+# SNPDoc user guide document.  Adapted from SNPDoc_User_Guide by R.T. Guy.
 
-created:  09-Mar-2011
-modified: 10-May-2011
+# created:  09-Mar-2011
+# modified: 10-May-2011
 
-ToDo:
+# ToDo:
 
-[2011-07-01 Fri] Make a table with the description of each field in the output.
-[2011-08-02 Tue] Add documentation for the CpG Island '*' (snp affects CpG
-                 sequence)
-[2012-06-18 Mon] Add documentation for local database interaction
+# [2011-07-01 Fri] Make a table with the description of each field in the output.
+# [2011-08-02 Tue] Add documentation for the CpG Island '*' (snp affects CpG
+#                  sequence)
+# [2012-06-18 Mon] Add documentation for local database interaction
 
-#+END_COMMENT
 
 #+LaTeX_CLASS: article
 
 * Title
 
   SNPDoc User Guide
-  Version x.y.z
 
-  Richard T. Guy, Wei Wang, Carl D. Langefeld
+  Richard T. Guy, David R. McWilliams, Wei Wang and Carl D. Langefeld
 
 * Summary
 
@@ -57,26 +54,28 @@ ToDo:
    Download the archive file and unpack in a working directory.  Change to the
    snpdoc directory and as root enter:
 
-   >perl installScript.pl
+   \vspace*{1cm}
+   > perl installScript.pl
 
+   \vspace*{1cm}
    By default the software will be installed in /usr/local/ with a link pointing
    to it in /usr/local/bin/.  Type 'snpdoc.pl --help' to verify operation.
 
    If you do not have root access, you can run snpdoc by giving the fully
    qualified path to the snpdoc.pl executable.  For example:
 
-   >perl /home/username/path/to/snpdoc.pl <options>
+   \vspace*{1cm}
+   > perl /home/username/path/to/snpdoc.pl <options>
 
+   \vspace*{1cm}
    If you receive errors describing missing modules, install them using CPAN.
    For example if the module 'DBI' is missing, enter as root:
 
-   >cpan install DBI
+   \vspace*{1cm}
+   > cpan install DBI
 
-   If you plan to use the linkage disequilibrium option to SNPDoc, you will need
-   to compile the Ensembl-provided program calc_genotypes.c found in the
-   directory <path to>/snpdoc/lib/src/ensembl-variation/C_code/.  Simply type
-   'make'.   You will also need to add the path to this directory to your PATH
-   environment variable.   
+   \vspace*{1cm}
+   You may also be able to use your package manager to install packages.
 
 ** Windows
 
@@ -84,16 +83,18 @@ ToDo:
    [[http://www.activestate.com/activeperl/]].  Once it installed, open a command
    window and change to the directory where you downloaded snpdoc and type:
 
-   >perl installScriptMSFT.pl
+   \vspace*{1cm}
+   > perl installScriptMSFT.pl
 
+   \vspace*{1cm}
    The script will create a folder called 'snpdoc' in your Program Files
-   directory.  Open the file 'test_results.txt' in the installation directory
+   directory.  Open the file 'test\_results.txt' in the installation directory
    and check for any tests that failed.  There will be instructions for
    installing perl modules that snpdoc needs.
 
    You may have to add snpdoc to your command path.  Do the following:
 
-   1) Click Start->Control Panel
+   1) Click Start-> Control Panel
    2) Click "Switch to Classic View"
    3) Double click "System"
    4) Click on the Advanced tab
@@ -101,27 +102,24 @@ ToDo:
    6) Double click on the variable Path.  This will bring up a box with contents
       that look similar to:
 
-      C:\Perl\site\bin;C:\Perl\bin;%SystemRoot%\system32;%SystemRoot%; ...
+      \verb+C:\Perl\site\bin;C:\Perl\bin;%SystemRoot%\system32;%SystemRoot%; ...+
 
-   7) Find the end of the text and append ';C:\Program Files\snpdoc\bin'
-      (without the quotation marks) and click OK.
+   7) Find the end of the text and append \verb+';C:\Program Files\snpdoc\bin'+
+      (include the semi-colon but not the quotation marks) and click OK.
 
    8) Click OK several more times to close the "System" control panel
 
    You should be able to run snpdoc by typing in a command window:
 
-   C:\my_project\snpdoc <options>
-
-   If you plan to use the linkage disequilibrium option to SNPDoc, 
-   see the instructions in the Linux installation section.
+   \verb+C:\my_project\snpdoc <options>+
 
 * Usage
-
 ** General
 
    Running snpdoc without command line options or with the --help flag
    prints the following usage information.
 
+   \begin{verbatim}
    usage:
    snpdoc [options] -infile FILE, where option is one or more of:
 
@@ -134,18 +132,21 @@ ToDo:
    --outfile       output file name; if not specified it will be created
                    from the input file name.
 
-   --wtype         type of output; one of "text" or "html" (default "text")
+   --outformat     type of output; one of "text" or "html" (default "text")
 
    --sep           field delimiter in the input file; currently tab and comma
                    are recognized (supply with quotes as "\t" or ",");
                    default comma
 
+   --db            use a database to save and retrieve results
+
+   --dbname        name of the database
+
+   --user          database username
+
    --stamp         include a random number for use in temporary files
 
    --verbose       print more information to the console as snpdoc runs
-
-   --ld            compute 5 snps with the highest r^2 with each snp in
-                   the file (this is slow)
 
    --ucsc_version  set the UCSC database version; currently hg18 and hg19
                    are recognized (default 19)
@@ -153,17 +154,25 @@ ToDo:
    --restart       a snp designation; if given, processing will start at
                    this snp in the file
 
+   \end{verbatim}
+
    Flags may also be given as '-h', '-o', etc., if the single letter uniquely
    specifies an option.
+
+   Options may also be put into the configuration file which currently is in the
+   /data directory of the snpdoc distribution.  In the future this will become a
+   user-suppliable parameter.  If a user name and password are required for a
+   database it must be in the configuration file.
    
 ** SNP Search
 
    Running SNPDoc with the '--search snp' option (the default) will search a
    number of databases and aggregate this information with information supplied
-   by the user (say statistics from a GWAS study).  The expected file format has
-   a header line and data lines following, with the SNP in the first column.
-   Only the 'rs#' format is currently allowed for the SNP designation.  Any
-   further columns are retained and appended to the columns output by SNPDoc.
+   by the user (e.g. statistics from a GWAS study).  The expected file format
+   has a header line and data lines following, with the SNP in the first column.
+   Only the 'rs#' format is currently recognized for a search.  Empty results
+   fields will be printed for non-standard names.  Any further columns are
+   retained and appended to the columns output by SNPDoc.
 
 ** Positional or Regional Search
 
@@ -177,51 +186,74 @@ ToDo:
 
    Running SNPDoc with the '--search pos' option performs a 'positional search'.
    The expected file format has a header line and the position description
-   should be in the form 'chr2:1234', for example.  User data is merged with
-   results.  Risk and classification are not computed for this option.
+   should be in the form 'chr2:1234', for example.  If the position corresponds
+   to a named snp, that name will be printed in the first column of output.  If
+   the snp is not named, risk and classification are not computed.  User data is
+   merged with results in either case.
+
+** Local Database Storage
+
+   SNPDoc can use a local database to store results, which will dramatically
+   speed up future searches.  As supplied SNPDoc reads and writes from a SQLite
+   database.  This can be created by SNPDoc by supplying the '--db' flag and
+   optionally the '--dbname' flag (with a name).  If no name is supplied a
+   database named 'snpdoc.sq3' is created.  SNPDoc will then store complete
+   results in the database as it executes web searches (incomplete results are
+   not stored to force them to be searched again in the future).  For subsequent
+   searches, supply '--db' and '-dbname <name>' and the database will be checked
+   before searching the web. The database schema is given in the Appendix.
+
+   If a username and password is added to a database these must be supplied in
+   the configuration file in the /data directory of the SNPDoc
+   distribution. (This inconvenience will be rectified in future releases).
+
+   SNPDoc can be easily modified to use any database with a perl DBI interface.
+   See the module DBWrite.pm in the distribution lib directory or contact the
+   current maintainer.
 
 ** Summary of the Risk Score Algorithm
 
-   SNPDoc uses a modified version of the FASTSNP algorithm (Yuan et al., 2006)
-   developed by Wei Wang.  The algorithm proceeds as follows.
+   SNPDoc uses a modified version of the FASTSNP algorithm (Yuan et al.,
+   2006). The algorithm proceeds as follows.
 
 *** Collect the following information for each SNP
 
-    + SNP function annotations from Ensemble
+    + SNP function annotations from UCSC
 
     + Transcription factor binding site information from the TFSEARCH
-      [[www.cbrc.jp/research/db/TFSEARCH.html]] database (Akiyama, 2011).
+      [[www.cbrc.jp/research/db/TFSEARCH.html]] database (Akiyama, 2011)
 
     + Significant exonic splicing enhancer (ESE) motifs found by ESEfinder
-      [[rulai.cshl.edu]],(Cartegni, 2003).
+      [[rulai.cshl.edu]],(Cartegni, 2003)
 
     + Significant exonic splicing enhancer motifs found by RESCUE-ESE
-      [[genes.mit.edu/burge-lab/rescue-ess]], (Fairbrother, 2002).
+      [[genes.mit.edu/burge-lab/rescue-ess]], (Fairbrother, 2002)
 
     + Significant exonic splicing silencer motifs found by FAS-ESS
-      [[genes.mit.edu/fas-ess]], (Wang, 2004).
+      [[genes.mit.edu/fas-ess]], (Wang, 2004)
 
 *** Examine the function for the SNP and score as follows
 
 **** If INTERGENIC then risk = 0
 
-**** If STOP_GAINED or STOP_LOST the risk = 5
+**** If STOP\_GAINED or STOP\_LOST then risk = 5
     
 **** If INTRONIC
 
 ***** If the TFSEARCH results are equivalent for both alleles, risk = 0, classification = "Intronic with no known function"
 
+
 ***** If the TFSEARCH results are not equivalent, risk = 3, classification = "Intronic enhancer"
 
-**** If SPLICE_SITE then risk =3 and classification = "Splice site"
+**** If SPLICE\_SITE then risk = 3 and classification = "Splice site"
 
-**** If 3PRIME_UTR then
+**** If 3PRIME\_UTR then
 
 ***** If the TFSEARCH results are equivalent for both alleles, risk = 0, classification = "Downstream with no known function"
 
 ***** If the TFSEARCH results are not equivalent, risk = 3, classification = "Promoter/Regulatory region"
 
-**** If 5PRIME_UTR then proceed as for 3PRIME_UTR
+**** If 5PRIME\_UTR then proceed as for 3PRIME\_UTR
 
 **** If UPSTREAM then
 
@@ -235,15 +267,15 @@ ToDo:
 
 ***** If the TFSEARCH results are not equivalent, risk = 3, classification = "Promoter/Regulatory region"
 
-**** If SYNONYMOUS_CODING then
+**** If SYNONYMOUS\_CODING then
 
 ***** If the ESE found by ESEfinder are equivalent for each allele, the ESE found by RESCUE-ESE are equivalent, and the splicing silencers found by FAS-ESE are equivalent then risk = 1 and classification = "Sense/Synonymous"
 
 ***** Otherwise risk = 3 and classification = "Sense/Synonymous; Splicing Region"
 
-**** If NON_SYNONYMOUS_CODING then
+**** If NON\_SYNONYMOUS\_CODING then
 
-***** Get the number of SNP functions in Ensembl whose biotype is "protein coding."
+***** Get the number of SNP functions whose biotype is "protein coding."
 ***** If at least one function is of biotype protein coding then
      
 ****** If the ESE found by ESEfinder are equivalent for each allele, the ESE found by RESCUE-ESE are equivalent, and the splicing silencers found by FAS-ESE are equivalent then risk = 4 and classification = "Mis-Sense (Leading to Non-Conservative Change)."
@@ -256,7 +288,8 @@ ToDo:
 
 ****** Otherwise risk = 3, classification = "Mis-Sense (Conservative); Splicing Regulation"
 
-**** The final risk score is the maximum from the above heuristic and the classification is that associated with it
+ The final risk score is the maximum from the above heuristic and the
+ classification is that associated with it
 
 * References
 
@@ -273,8 +306,7 @@ ToDo:
     9;297(5583):1007-13.
 
   + Guy, R.T., Wang, W., Marion, M.C, Ramos, P.S., Howard, T., and Langefeld,
-    C.D., "SNPDoc: Integrating genomic data and statistical results."
-    [Submitted]
+    C.D., SNPDoc: Integrating genomic data and statistical results. [Submitted]
 
   + Hsiang-Yu Yuan, Jen-Jie Chiou, Wen-Hsien Tseng, Chia-Hung Liu, Chuan-Kun
     Liu, Yi-Jung Lin, Hui-Hung Wang, Adam Yao, Yuan-Tsong Chen, and Chun-Nan
@@ -286,3 +318,6 @@ ToDo:
     C. B. (2004). Systematic identification and analysis of exonic splicing
     silencers. Cell 119, 831-845.
 
+* Appendix
+
+  

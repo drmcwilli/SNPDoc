@@ -18,7 +18,8 @@
 # instance), change 'INFO' to 'ERROR' or to see a great deal of debugging
 # output to 'DEBUG'.
 
-log4perl.rootLogger = WARN, LOGFILE
+# log4perl.rootLogger = WARN, LOGFILE
+log4perl.rootLogger = DEBUG, LOGFILE
 
 log4perl.appender.LOGFILE = Log::Log4perl::Appender::File
 log4perl.appender.LOGFILE.filename = snpdoc.log
