@@ -233,6 +233,7 @@ sub calc_risk_ucsc {
   my $dna1   = $data->dna1 ;
   my $dna2   = $data->dna2 ;
 
+
   my $maxrisk  = 0 ;
   my $maxclass = "" ;
   my $risk ;
@@ -267,7 +268,11 @@ sub calc_risk_ucsc {
       # Get the number of transcription factors for each allele
       if ($tf_ct1 < 0) {
         # ($tf_ct1, $tf_ct2) = get_TFSEARCH() ;
-        $tf_result = get_TFSEARCH() ;
+
+        my $msg = "Just before call to get_tfsearch: dna1 = $dna1; dna2 = $dna2." ;
+        $log->debug($msg) ;
+
+        $tf_result = get_TFSEARCH($dna1, $dna2) ;
 
         if ($log->is_debug()) {
           $msg = "Result of get_TFSEARCH: " . Dumper $tf_result ;
@@ -326,16 +331,16 @@ sub calc_risk_ucsc {
         }
       } else {                  # Check for other regulatory features
         if ($esef_ct1 < 0) {
-          ($esef_ct1, $esef_ct2) = get_ESEF() ;
+          ($esef_ct1, $esef_ct2) = get_ESEF($dna1, $dna2) ;
           if ($esef_ct1 != $esef_ct2) {
             $rese_ct1 = 1; $rese_ct2 = -1 ;
             $fas_ct2  = 1;  $fas_ct2 = -1 ;
           } else {
-            ($rese_ct1, $rese_ct2) = get_rescueese_data() ;
+            ($rese_ct1, $rese_ct2) = get_rescueese_data($dna1, $dna2) ;
             if ($rese_ct1 != $rese_ct2) {
               $fas_ct1 = 1; $fas_ct2 = -1 ;
             } else {
-              ($fas_ct1, $fas_ct2) = get_FASESE() ;
+              ($fas_ct1, $fas_ct2) = get_FASESE($dna1, $dna2) ;
             }
           }
         } # end if esef_ct1
@@ -420,6 +425,9 @@ sub get_TFSEARCH {
   my $msg = "In get_TFSEARCH." ;
   $log->debug($msg) ;
 
+  my $dna1 = shift ;
+  my $dna2 = shift ;
+
   my @in1; my @in2 ;
   my $in1; my $in2 ;
 
@@ -432,12 +440,14 @@ sub get_TFSEARCH {
                 tf1    => -1,
                 tf2    => -1} ;
 
+
   # my $tf_url = "http://www.cbrc.jp/htbin/nph-tfsearch?label=&seq=" ;   # pre 01-Jul-2012
   my $tf_url = "http://mbs.cbrc.jp/htbin/nph-tfsearch?taxonomy=V&seq=" ;
 
   # Get 1
   until ($passed1) {
-    my $tf1_query = $tf_url . $dna1 ; ;
+    my $tf1_query = $tf_url . $dna1 ;
+
     $in1 = get($tf1_query) ;    # HTTP GET from LWP
 
     unless (defined $in1) {
@@ -533,6 +543,9 @@ sub get_ESEF {
   my $log = Log::Log4perl->get_logger("get_ESEF") ;
   my $msg = "In get_ESEF." ;
   $log->debug($msg) ;
+
+  my $dna1 = shift ;
+  my $dna2 = shift ;
 
   my @in1; my @in2 ;
   my $in1; my $in2 ;
@@ -703,6 +716,9 @@ sub get_rescueese_data {
   my $msg = "In get_rescueese_data." ;
   $log->debug($msg) ;
 
+  my $dna1 = shift ;
+  my $dna2 = shift ;
+
   my @in1; my @in2 ;
   my $in1; my $in2 ;
 
@@ -795,6 +811,9 @@ sub get_FASESE {
   my $log = Log::Log4perl->get_logger("get_FASESE") ;
   my $msg = "In get_FASESE." ;
   $log->debug($msg) ;
+
+  my $dna1 = shift ;
+  my $dna2 = shift ;
 
   my @in1; my @in2 ;
   my $in1; my $in2 ;
