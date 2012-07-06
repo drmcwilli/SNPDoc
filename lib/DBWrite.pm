@@ -310,8 +310,8 @@ sub put{
   my $alias       = $data->alias ;
   my $multiz      = $data->cons_multiz ;
   my $phast       = $data->cons_phast ;
-  my $maxrisk     = $data->risk ;
-  my $maxclass    = $data->classification ;
+  my $maxrisk     = $data->risk_ucsc ;
+  my $maxclass    = $data->classification_ucsc ;
   my $version     = $data->version ;
   my $cpg         = $data->CpG ;
   my $cnv         = $data->CNV ;
