@@ -152,7 +152,7 @@
                    are recognized (default 19)
 
    --restart       a snp designation; if given, processing will start at
-                   this snp in the file
+                   this snp in the file (snp search only)
 
    \end{verbatim}
 
@@ -161,7 +161,7 @@
 
    Options may also be put into the configuration file which currently is in the
    /data directory of the snpdoc distribution.  In the future this will become a
-   user-suppliable parameter.  If a user name and password are required for a
+   user-providable parameter.  If a user name and password are required for a
    database it must be in the configuration file.
    
 ** SNP Search
@@ -194,7 +194,7 @@
 ** Local Database Storage
 
    SNPDoc can use a local database to store results, which will dramatically
-   speed up future searches.  As supplied SNPDoc reads and writes from a SQLite
+   speed up future searches.  As supplied, SNPDoc reads and writes from a SQLite
    database.  This can be created by SNPDoc by supplying the '--db' flag and
    optionally the '--dbname' flag (with a name).  If no name is supplied a
    database named 'snpdoc.sq3' is created.  SNPDoc will then store complete
@@ -319,5 +319,36 @@
     silencers. Cell 119, 831-845.
 
 * Appendix
+** SNPDoc Database Scheme
 
-  
+\begin{verbatim}   
+
+    CREATE TABLE variation (
+      type varchar(255),
+      name varchar(255),
+      chr  varchar(2),
+      pos1 int,
+      pos2 int,
+      ncbi_url varchar(255),
+      ucsc_url varchar(255),
+      chr_url varchar(255),
+      near_gene1 varchar(255),
+      gene_url1 varchar(255),
+      near_gene2 varchar(255),
+      gene_url2 varchar(255),
+      gene varchar(255),
+      description varchar(255),
+      gene_url varchar(255),
+      alias varchar(255),
+      cons_multiz float,
+      cons_phast float,
+      risk int,
+      cpg varchar(255),
+      cnv varchar(255),
+      maxclass  varchar(255),
+      version int,
+      merged_to varchar(255),
+      date_inserted varchar(25)
+    );
+    
+\end{verbatim}
