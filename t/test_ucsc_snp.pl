@@ -29,7 +29,7 @@ unless (open IN, "<", $fh) {
 }
 
 if ($db_version == 19) {
-  $table_name = "snp132" ;
+  $table_name = "snp135" ;
 } else {
   $table_name = "snp130" ;
 }
