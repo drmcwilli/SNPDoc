@@ -10,7 +10,7 @@ Make a symbolic link in $site/bin.
 =cut
 
 $site = "/usr/local" ;
-$executablesite = "/usr/local/bin" ;
+$executablesite = "/usr/bin" ;
 
 mkdir("$site/snpdoc") or
   die("Could not make directory $site.  Do you have permission?\n");
@@ -83,7 +83,7 @@ if( eval "use FindBin::Real; 1" ) {
   print "Yes!\n";
 } else {
   print "No.\n" ;
-  need_pkgs++ ;
+  $need_pkgs++ ;
 }
 
 print "Log::Log4perl installed? " ;

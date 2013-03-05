@@ -118,7 +118,7 @@ sub calc_risk {
         # counts.  Therefore, I exit as soon as I detect inequality.
         # This should drastically reduce number of calls.
         if ($esef_ct1 < 0) {
-          ($esef_ct1, $esef_ct2) = get_ESEF() ;
+          ($esef_ct1, $esef_ct2) = get_ESEF($dna1, $dna2) ;
           if ($esef_ct1 != $esef_ct2) {
             $rese_ct1 = 1; $rese_ct2 = -1 ;
             $fas_ct2  = 1;  $fas_ct2 = -1 ;
@@ -547,6 +547,9 @@ sub get_ESEF {
   my $dna1 = shift ;
   my $dna2 = shift ;
 
+  $msg = "dna1:|" . $dna1 . "| dna2: |" . $dna2 . "|" ;
+  $log->debug($msg) ;
+
   my @in1; my @in2 ;
   my $in1; my $in2 ;
 
@@ -561,13 +564,20 @@ sub get_ESEF {
       . $dna1
         . "&custthresh_sc35=0&custthresh_sf2=0&radio_srp55=0&custthresh_srp55=0&protein4=1&email=&protein3=1&protein2=1&protein1=1&radio_sc35=0&upload=" ;
 
+    $msg = "Calling get with url: |" . $esef1 . "|." ;
+    $log->debug($msg) ;
+
     $in1 = get($esef1) ;
 
     unless(defined $in1) {
       $retry_cnt1++ ;
-      die("ESEF1 was unable to be revived.") if ($retry_cnt1 == $retry_lim) ;
+      $msg = "ESEF1 was unable to be revived." ;
+      $log->warn($msg) ;
+      die($msg) if ($retry_cnt1 == $retry_lim) ;
       my $sleep = $sleeptime * $retry_cnt1 ;
-      print "[RiskMarker::get_ESEF] ESEF1 was unavailable on try $retry_cnt1 of $retry_lim.  I'm going to hibernate for $sleep seconds and try again.\n" ;
+      $msg = "[RiskMarker::get_ESEF] ESEF1 was unavailable on try $retry_cnt1 of $retry_lim.  I'm going to hibernate for $sleep seconds and try again." ;
+      $log->debug($msg) ;
+      print $msg, "\n" ;
       sleep($sleep) ;
     } else {
       $passed1++ ;
@@ -575,24 +585,37 @@ sub get_ESEF {
   }
   @in1 = split(/\n/,$in1) ;
 
+  $msg = "Array in1: |" . join("|", @in1) . "|." ;
+  $log->debug($msg) ;
+
   until ($passed2) {
     my $esef2 = "http://rulai.cshl.edu/cgi-bin/tools/ESE/esefinder.cgi?radio_srp40=0&custthresh_srp40=0&name=Send&radio_sf2=0&sequence="
       . $dna2
         . "&custthresh_sc35=0&custthresh_sf2=0&radio_srp55=0&custthresh_srp55=0&protein4=1&email=&protein3=1&protein2=1&protein1=1&radio_sc35=0&upload=" ;
 
+    $msg = "Calling get with url: |" . $esef2 . "|." ;
+    $log->debug($msg) ;
+
     $in2= get($esef2) ;
 
     unless(defined $in2) {
       $retry_cnt2++ ;
-      die("ESEF2 was unable to be revived.") if ($retry_cnt2 == $retry_lim) ;
+      $msg = "ESEF2 was unable to be revived." ;
+      $log->warn($msg) ;
+      die($msg) if ($retry_cnt2 == $retry_lim) ;
       my $sleep = $sleeptime * $retry_cnt2 ;
-      print "[RiskMarker::get_ESEF] ESEF2 was unavailable on try $retry_cnt2 of $retry_lim.  I'm going to hibernate for $sleep seconds and try again.\n" ;
+      $msg = "[RiskMarker::get_ESEF] ESEF2 was unavailable on try $retry_cnt2 of $retry_lim.  I'm going to hibernate for $sleep seconds and try again." ;
+      $log->debug($msg) ;
+      print $msg, "\n" ;
       sleep($sleep) ;
     } else {
       $passed2++ ;
     }
   }
   @in2 = split(/\n/,$in2) ;
+
+  $msg = "Array in2: |" . join("|", @in2) . "|." ;
+  $log->debug($msg) ;
 
   # The rest of this method written by Wei Wang.
 
@@ -636,7 +659,9 @@ sub get_ESEF {
   }                             # end foreach in1
 
   if ( !( @positions1 == @sequences1 && @positions1 == @scores1 ) ) {
-    print "[RiskMarker::get_ESEF] Inequality in esef1 results\n" ;
+    $msg = "[RiskMarker::get_ESEF] Inequality in esef1 results." ;
+    $log->warn($msg) ;
+    print $msg, "\n" ;
     exit ;
   }
 
@@ -688,7 +713,9 @@ sub get_ESEF {
   }                             # end foreach in2
 
   if ( !( @positions2 == @sequences2 && @positions2 == @scores2 ) ) {
-    print "[RiskMarker::get_ESEF] Inequality in esef2 results\n" ;
+    $msg = "[RiskMarker::get_ESEF] Inequality in esef2 results." ;
+    $log->warn($msg) ;
+    print $msg, "\n" ;
     exit ;
   }
 
@@ -698,6 +725,9 @@ sub get_ESEF {
       $ct2++ ;
     }
   }
+  $msg = "ct1 = $ct1; ct2 = $ct2" ;
+  $log->debug($msg) ;
+
   print "[RiskMarker::get_ESEF] ESEfinder\t$ct1 =[]= $ct2\n" if($verbose) ;
 
   return $ct1, $ct2 ;

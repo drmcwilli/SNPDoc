@@ -732,7 +732,7 @@ sub trim_line {
          ($data->near_gene_d) ) {
       process_gene($data->gene) ;
       # RiskMarker->calc_risk( $options->{verbose}, $data ) ;
-      RiskMarker->calc_risk_ucsc($data) ;
+      # RiskMarker->calc_risk_ucsc($data) ;
     } else {          # This SNP is not in a gene.  Check for nearest.
       $ucsc_test->get_nearest($data)  ;
       $data->risk("NA")  ;

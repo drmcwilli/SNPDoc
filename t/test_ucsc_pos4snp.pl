@@ -15,7 +15,7 @@ use warnings ;
 use DBI ;
 
 # At this time (09-May-2011) valid values are 18 and 19
-my $db_version = 19 ;
+my $db_version = 18 ;
 my $table_name = "" ;
 
 if ($db_version == 19) {
