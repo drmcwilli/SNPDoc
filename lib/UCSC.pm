@@ -121,6 +121,7 @@ Connect to the UCSC database and return a handle for querying snp
 information in tables 'snp131' or 'snp130'.
 
 05-Oct-2012 Update hg19 table to 135
+19-Jun-2013 Update hg19 table to 137
 
 =cut
 
@@ -145,8 +146,8 @@ sub load_for_snp_info {
 
   $self->{data} = $dbh ;
 
-  my $table_name = "snp135" ;
-  if ($db_version < 19) {
+  my $table_name = "snp137" ;
+  if ($db_version == 18) {
     $table_name = "snp130" ;
   }
 
@@ -621,6 +622,7 @@ sub get_conservation {
  Check whether a position is a named snp.
 
  05-Oct-2012 Update hg19 table to 135.
+ 19-Jun-2013 Update hg19 table to 137.
 
 =cut
 
@@ -644,7 +646,7 @@ sub is_snp {
   my $table_name = "" ;
 
   if ($db_version == 19) {
-    $table_name = "snp135" ;
+    $table_name = "snp137" ;
   } else {
     $table_name = "snp130" ;
   }
@@ -681,6 +683,7 @@ sub is_snp {
  for the peptide produced from one of the stop codons.
 
  05-Oct-2012 Update hg19 table to 135.
+ 19-Jun-2013 Update hg19 table to 137.
 
 =cut
 
@@ -697,7 +700,7 @@ sub has_stop {
 
   my $table_name ;
   if ($db_version == 19) {
-    $table_name = "snp135CodingDbSnp" ;
+    $table_name = "snp137CodingDbSnp" ;
   } else {
     $table_name = "snp130CodingDbSnp" ;
   }
